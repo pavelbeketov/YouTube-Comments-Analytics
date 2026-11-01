@@ -11,6 +11,7 @@ from urllib.parse import parse_qs, urlparse
 
 import requests
 from dotenv import load_dotenv
+from user_limits import FREE_ANALYSIS_LIMIT, record_success, remaining_analyses
 
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT / ".env")
@@ -91,7 +92,7 @@ def run_pipeline(video_url: str) -> None:
             text=True,
             encoding="utf-8",
             errors="replace",
-            timeout=3600,
+            timeout=7200 if stage == "analyze.py" else 3600,
             check=False,
         )
         if result.stdout:
@@ -101,30 +102,47 @@ def run_pipeline(video_url: str) -> None:
             raise RuntimeError(f"{stage} failed (exit {result.returncode}): {detail[-2500:]}")
 
 
-def process_video(chat_id: int, video_url: str) -> None:
-    send_message(chat_id, 'Link received. Collecting comments, analyzing them, and generating charts. This may take a few minutes.')
+def process_video(chat_id: int, video_url: str, user_id: int | None = None) -> None:
+    user_id = user_id if user_id is not None else chat_id
+    usage_file = ROOT / "data" / "user_limits.sqlite3"
     try:
+        if remaining_analyses(user_id, usage_file) == 0:
+            send_message(chat_id, f'You have used all {FREE_ANALYSIS_LIMIT} free video analyses. Your limit has been reached.')
+            return
+        send_message(chat_id, 'Link received. Collecting comments, analyzing them, and generating charts. This may take a few minutes.')
         run_pipeline(video_url)
-        summary = ROOT / "data" / "analysis_summary.txt"
-        report = ROOT / "data" / "analysis.pdf"
+        summaries = [
+            ("Russian summary", ROOT / "data" / "analysis_summary.txt"),
+            ("English summary", ROOT / "data" / "en_analysis_summary.txt"),
+        ]
+        reports = [
+            ("Full report (Russian)", ROOT / "data" / "ru_analysis.pdf"),
+            ("Full report (English)", ROOT / "data" / "en_analysis.pdf"),
+        ]
         images = [
             ROOT / "data" / "graphs" / "sentiment_distribution.png",
             ROOT / "data" / "graphs" / "topic_distribution.png",
             ROOT / "data" / "graphs" / "engagement_by_sentiment.png",
         ]
-        required = [summary, report, *images]
+        required = [path for _, path in summaries + reports] + images
         missing = [str(path.relative_to(ROOT)) for path in required if not path.is_file()]
         if missing:
             raise RuntimeError("Pipeline completed but output files are missing: " + ", ".join(missing))
 
-        summary_text = summary.read_text(encoding="utf-8").strip()
-        if not summary_text:
-            raise RuntimeError("Pipeline completed but the summary is empty")
-        send_message(chat_id, summary_text)
+        summary_messages = []
+        for label, path in summaries:
+            text = path.read_text(encoding="utf-8").strip()
+            if not text:
+                raise RuntimeError(f"Pipeline completed but the summary is empty: {path.name}")
+            summary_messages.append(f"{label}\n\n{text}")
+        for message in summary_messages:
+            send_message(chat_id, message)
         for image in images:
             send_photo(chat_id, image)
-        send_document(chat_id, report, 'Full report')
-        send_message(chat_id, 'Done. All files have been sent.')
+        for caption, path in reports:
+            send_document(chat_id, path, caption)
+        remaining = record_success(user_id, usage_file)
+        send_message(chat_id, f'Done. All files have been sent. Free analyses left: {remaining}.')
     except Exception as error:
         print(f"Pipeline error: {error}", file=sys.stderr, flush=True)
         message = 'Processing failed. Please try again later.'
@@ -171,16 +189,17 @@ def main() -> int:
                 message = update.get("message", {})
                 chat = message.get("chat", {})
                 chat_id = chat.get("id")
+                user_id = message.get("from", {}).get("id")
                 text = (message.get("text") or "").strip()
-                if chat.get("type") != "private":
+                if chat.get("type") != "private" or user_id is None:
                     continue
                 if text in {"/start", "/help"}:
-                    send_message(chat_id, 'Send a YouTube video link. I will collect the comments, analyze them, and send you the reports and charts.')
+                    send_message(chat_id, f'Send a YouTube video link. I will collect the comments, analyze them, and send you the reports and charts. Each user has {FREE_ANALYSIS_LIMIT} free video analyses in total. Failed analyses do not count.')
                     continue
                 if not extract_video_id(text):
                     send_message(chat_id, 'Please send a valid YouTube video link, for example: https://www.youtube.com/watch?v=kC_v3ufGoGs')
                     continue
-                process_video(chat_id, text)
+                process_video(chat_id, text, user_id=user_id)
         except requests.RequestException as error:
             print(f"Telegram connection error: {error}", file=sys.stderr, flush=True)
             time.sleep(5)

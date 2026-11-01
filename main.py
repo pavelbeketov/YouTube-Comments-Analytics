@@ -4,6 +4,7 @@ import re
 from urllib.parse import parse_qs, urlparse
 from dotenv import load_dotenv
 from googleapiclient.discovery import build
+from analysis_history import record_analysis_start
 
 load_dotenv()
 api_key = os.getenv("YOUTUBE_API_KEY")
@@ -44,6 +45,7 @@ def extract_video_id(value):
     return video_id_value
 
 
+source_url = video_id.strip()
 video_id = extract_video_id(video_id)
 
 
@@ -80,5 +82,8 @@ def save_comments(order, filename):
     print(f"Save: {os.path.abspath(filename)}")
 
 
+if "://" not in source_url:
+    source_url = f"https://www.youtube.com/watch?v={video_id}"
+record_analysis_start(source_url)
 save_comments("time", "data/comments_latest.csv")
 save_comments("relevance", "data/comments_relevant.csv")

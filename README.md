@@ -1,14 +1,14 @@
-﻿# YouTube Comments Analytics
+# YouTube Comments Analytics
 
 A Telegram bot that analyzes comments on YouTube videos. Send a video link in a private chat. The bot collects comments, uses a local Ollama model to analyze them, and sends the results back.
 
 You receive:
 
-- A short summary as a text message: 3–5 sentences about the comments, with no advice for the video creator.
+- Two short summaries as text messages, one in Russian and one in English: 3–5 sentences about the comments, with no advice for the video creator.
 - Three chart images: comment sentiment (positive, neutral, or negative), main topics, and average likes and replies by sentiment.
-- A full report as `analysis.pdf`.
+- Two full reports: `ru_analysis.pdf` in Russian and `en_analysis.pdf` in English.
 
-The bot's messages are in English. The model writes the report and summary in Russian.
+The bot's messages are in English. The model first writes the report and summary in Russian. It then translates both into clear English at B1 level.
 
 ## Requirements
 
@@ -56,6 +56,15 @@ OLLAMA_URL=http://localhost:11434
 Replace the example key and token with your own values. Keep them private. Git ignores the `.env` file.
 
 You do not need to set a Telegram user ID. Anyone can use the bot in a private chat. The bot ignores group messages.
+
+Each user can complete **3 free video analyses in total**. This limit does not
+reset each day or after a restart. The bot counts an analysis after it sends
+both summaries, all three charts, and both PDFs. Failed requests do not use an
+attempt. Analyzing the same video again uses another attempt.
+
+The bot saves counts by Telegram user ID in `data/user_limits.sqlite3`. Keep
+this file to preserve the limits. Git ignores it. Requests beyond the limit
+receive a message without starting analysis. Payments are not set up yet.
 
 ### 3. Start Ollama
 
@@ -108,23 +117,40 @@ The bot runs these scripts in order:
 | Script | What it does |
 | --- | --- |
 | `main.py` | Gets the latest and top comments from the YouTube API and saves two CSV files. |
-| `analyze.py` | Uses Ollama to create the report, summary, and chart data. |
-| `report_pdf.py` | Converts the Markdown report to PDF with support for Russian text. |
+| `analyze.py` | Uses Ollama to create Russian and English reports and summaries, plus chart data. |
+| `report_pdf.py` | Converts both Markdown reports to PDF with support for Russian text. |
 | `graphs.py` | Creates an HTML chart page and separate SVG and PNG images. |
 
-After all steps finish successfully, the bot sends the summary, images, and PDF to the chat that sent the link. If a step fails, the bot sends an error message. You can find the error details in the terminal.
+After all steps finish successfully, the bot sends both summaries, the images, and both PDFs to the chat that sent the link. If a step fails, the bot sends an error message. You can find the error details in the terminal.
 
 ## Result files
 
 The project saves results in `data/`. Each new run replaces these files. It does not keep a separate history for each user or video.
 
+The link history is different: `data/analysis_history.txt` keeps all new starts.
+It adds one line when comment collection starts, both from Telegram and from a
+manual run. Each line has a number, the start date and time in `Asia/Jerusalem`
+(with the UTC offset), and the video link. Numbers continue after a restart.
+Repeated links get a new line. A start stays in the history even if a later step fails.
+Requests that are still waiting are not recorded yet.
+
+Example:
+
+```text
+(1) (2026-11-01 15:30:00 +0200) (https://www.youtube.com/watch?v=hT_MAAwFLIc&t=109s)
+```
+
 | Path | Contents |
 | --- | --- |
+| `data/analysis_history.txt` | A text history of video links and analysis start times. This file is not replaced. |
 | `data/comments_latest.csv` | Comments sorted by time. |
 | `data/comments_relevant.csv` | Top comments, sorted by YouTube relevance. |
-| `data/analysis_summary.txt` | The short summary. The bot sends its text as a message. |
-| `data/analysis.md` | The full report in Markdown format. |
-| `data/analysis.pdf` | The full report sent to Telegram. |
+| `data/analysis_summary.txt` | The Russian summary, sent as a text message. |
+| `data/en_analysis_summary.txt` | The English summary, sent as a text message. |
+| `data/analysis.md` | The full Russian report in Markdown format. |
+| `data/en_analysis.md` | The full English report in Markdown format. |
+| `data/ru_analysis.pdf` | The Russian PDF report sent to Telegram. |
+| `data/en_analysis.pdf` | The English PDF report sent to Telegram. |
 | `data/analysis_data.json` | Comment numbers, sentiment labels, and topics for the charts. |
 | `data/graphs.html` | A chart page that you can open in a browser. |
 | `data/graphs/` | Three charts, each saved as SVG and PNG. |
@@ -147,9 +173,9 @@ $env:YOUTUBE_VIDEO_URL = "https://www.youtube.com/watch?v=hT_MAAwFLIc"
 
 Run each command after the previous one finishes successfully. This saves the results on your computer. It does not send them to Telegram.
 
-To create the PDF or charts again from existing data, run only the script you need.
+To create both PDFs or the charts again from existing data, run only the script you need.
 
-You can change the model and the time limit for each Ollama request. The time limit is in seconds:
+You can change the model and the time limit for each Ollama request. The time limit is in seconds. English translation needs two more model requests, so each run takes longer:
 
 ```powershell
 .\.venv\Scripts\python.exe analyze.py --model qwen3:8b --timeout 600

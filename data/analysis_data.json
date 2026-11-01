@@ -6,169 +6,209 @@
       "source_file": "comments_latest.csv",
       "metrics": {
         "comments": 20,
-        "likes_total": 16,
-        "replies_total": 2,
-        "comments_with_likes": 11,
+        "likes_total": 39,
+        "replies_total": 12,
+        "comments_with_likes": 6,
         "comments_with_replies": 1
       },
       "sentiment_counts": {
-        "positive": 7,
-        "neutral": 4,
-        "negative": 9
+        "positive": 4,
+        "neutral": 10,
+        "negative": 6
       },
       "topics": [
         {
-          "topic": "Политика",
-          "count": 16
+          "topic": "Видео",
+          "count": 4
         },
         {
-          "topic": "Образование",
+          "topic": "Аренда",
+          "count": 3
+        },
+        {
+          "topic": "Недвижимость",
           "count": 2
         },
         {
-          "topic": "Экономика",
+          "topic": "Ремонт",
           "count": 2
+        },
+        {
+          "topic": "Города",
+          "count": 1
+        },
+        {
+          "topic": "Зарплата",
+          "count": 1
+        },
+        {
+          "topic": "Контент",
+          "count": 1
+        },
+        {
+          "topic": "Люди",
+          "count": 1
+        },
+        {
+          "topic": "Монтаж",
+          "count": 1
+        },
+        {
+          "topic": "Права",
+          "count": 1
+        },
+        {
+          "topic": "Птицы",
+          "count": 1
+        },
+        {
+          "topic": "Реклама",
+          "count": 1
+        },
+        {
+          "topic": "Этичность",
+          "count": 1
         }
       ],
       "comments": [
         {
           "number": 1,
-          "sentiment": "negative",
-          "topic": "Политика",
-          "likes": 0,
-          "replies": 0
+          "sentiment": "neutral",
+          "topic": "Реклама",
+          "likes": 33,
+          "replies": 12
         },
         {
           "number": 2,
           "sentiment": "negative",
-          "topic": "Политика",
-          "likes": 0,
+          "topic": "Аренда",
+          "likes": 1,
           "replies": 0
         },
         {
           "number": 3,
-          "sentiment": "neutral",
-          "topic": "Политика",
+          "sentiment": "negative",
+          "topic": "Видео",
           "likes": 1,
           "replies": 0
         },
         {
           "number": 4,
-          "sentiment": "positive",
-          "topic": "Политика",
-          "likes": 2,
+          "sentiment": "negative",
+          "topic": "Птицы",
+          "likes": 1,
           "replies": 0
         },
         {
           "number": 5,
           "sentiment": "negative",
-          "topic": "Политика",
+          "topic": "Этичность",
           "likes": 0,
           "replies": 0
         },
         {
           "number": 6,
-          "sentiment": "positive",
-          "topic": "Образование",
-          "likes": 5,
-          "replies": 2
+          "sentiment": "neutral",
+          "topic": "Аренда",
+          "likes": 0,
+          "replies": 0
         },
         {
           "number": 7,
           "sentiment": "positive",
-          "topic": "Образование",
-          "likes": 1,
+          "topic": "Города",
+          "likes": 0,
           "replies": 0
         },
         {
           "number": 8,
-          "sentiment": "negative",
-          "topic": "Политика",
+          "sentiment": "neutral",
+          "topic": "Аренда",
           "likes": 0,
           "replies": 0
         },
         {
           "number": 9,
           "sentiment": "neutral",
-          "topic": "Экономика",
+          "topic": "Ремонт",
           "likes": 0,
           "replies": 0
         },
         {
           "number": 10,
-          "sentiment": "negative",
-          "topic": "Политика",
+          "sentiment": "positive",
+          "topic": "Монтаж",
           "likes": 0,
           "replies": 0
         },
         {
           "number": 11,
-          "sentiment": "negative",
-          "topic": "Политика",
+          "sentiment": "neutral",
+          "topic": "Недвижимость",
           "likes": 0,
           "replies": 0
         },
         {
           "number": 12,
           "sentiment": "neutral",
-          "topic": "Политика",
-          "likes": 1,
+          "topic": "Права",
+          "likes": 0,
           "replies": 0
         },
         {
           "number": 13,
-          "sentiment": "negative",
-          "topic": "Политика",
-          "likes": 1,
+          "sentiment": "neutral",
+          "topic": "Недвижимость",
+          "likes": 0,
           "replies": 0
         },
         {
           "number": 14,
           "sentiment": "neutral",
-          "topic": "Политика",
+          "topic": "Видео",
           "likes": 0,
           "replies": 0
         },
         {
           "number": 15,
           "sentiment": "negative",
-          "topic": "Политика",
-          "likes": 1,
+          "topic": "Видео",
+          "likes": 2,
           "replies": 0
         },
         {
           "number": 16,
-          "sentiment": "negative",
-          "topic": "Экономика",
+          "sentiment": "neutral",
+          "topic": "Ремонт",
           "likes": 0,
           "replies": 0
         },
         {
           "number": 17,
-          "sentiment": "positive",
-          "topic": "Политика",
-          "likes": 1,
+          "sentiment": "negative",
+          "topic": "Видео",
+          "likes": 0,
           "replies": 0
         },
         {
           "number": 18,
           "sentiment": "positive",
-          "topic": "Политика",
-          "likes": 1,
+          "topic": "Люди",
+          "likes": 0,
           "replies": 0
         },
         {
           "number": 19,
-          "sentiment": "positive",
-          "topic": "Политика",
+          "sentiment": "neutral",
+          "topic": "Зарплата",
           "likes": 1,
           "replies": 0
         },
         {
           "number": 20,
           "sentiment": "positive",
-          "topic": "Политика",
-          "likes": 1,
+          "topic": "Контент",
+          "likes": 0,
           "replies": 0
         }
       ]
@@ -177,185 +217,169 @@
       "source_file": "comments_relevant.csv",
       "metrics": {
         "comments": 20,
-        "likes_total": 1943,
-        "replies_total": 280,
+        "likes_total": 1324,
+        "replies_total": 130,
         "comments_with_likes": 20,
-        "comments_with_replies": 8
+        "comments_with_replies": 11
       },
       "sentiment_counts": {
-        "positive": 17,
-        "neutral": 0,
-        "negative": 3
+        "positive": 2,
+        "neutral": 8,
+        "negative": 10
       },
       "topics": [
         {
-          "topic": "Интервью",
-          "count": 8
-        },
-        {
           "topic": "Политика",
-          "count": 7
+          "count": 17
         },
         {
-          "topic": "Контент",
-          "count": 1
+          "topic": "Реклама",
+          "count": 2
         },
         {
-          "topic": "Личность",
-          "count": 1
-        },
-        {
-          "topic": "Образование",
-          "count": 1
-        },
-        {
-          "topic": "Общество",
-          "count": 1
-        },
-        {
-          "topic": "Технология",
+          "topic": "Экономика",
           "count": 1
         }
       ],
       "comments": [
         {
           "number": 1,
-          "sentiment": "negative",
-          "topic": "Политика",
-          "likes": 911,
-          "replies": 137
+          "sentiment": "neutral",
+          "topic": "Реклама",
+          "likes": 33,
+          "replies": 12
         },
         {
           "number": 2,
           "sentiment": "positive",
-          "topic": "Технология",
-          "likes": 4,
-          "replies": 0
+          "topic": "Политика",
+          "likes": 298,
+          "replies": 13
         },
         {
           "number": 3,
-          "sentiment": "positive",
-          "topic": "Интервью",
-          "likes": 212,
-          "replies": 17
+          "sentiment": "negative",
+          "topic": "Политика",
+          "likes": 259,
+          "replies": 10
         },
         {
           "number": 4,
-          "sentiment": "positive",
-          "topic": "Интервью",
-          "likes": 4,
-          "replies": 0
+          "sentiment": "neutral",
+          "topic": "Политика",
+          "likes": 114,
+          "replies": 27
         },
         {
           "number": 5,
-          "sentiment": "positive",
-          "topic": "Интервью",
-          "likes": 5,
-          "replies": 0
+          "sentiment": "negative",
+          "topic": "Политика",
+          "likes": 50,
+          "replies": 6
         },
         {
           "number": 6,
-          "sentiment": "positive",
+          "sentiment": "negative",
           "topic": "Политика",
-          "likes": 164,
-          "replies": 15
+          "likes": 130,
+          "replies": 5
         },
         {
           "number": 7,
-          "sentiment": "negative",
+          "sentiment": "neutral",
           "topic": "Политика",
-          "likes": 176,
-          "replies": 41
+          "likes": 1,
+          "replies": 0
         },
         {
           "number": 8,
           "sentiment": "positive",
-          "topic": "Интервью",
-          "likes": 16,
-          "replies": 1
+          "topic": "Политика",
+          "likes": 6,
+          "replies": 0
         },
         {
           "number": 9,
-          "sentiment": "positive",
-          "topic": "Контент",
-          "likes": 43,
+          "sentiment": "neutral",
+          "topic": "Политика",
+          "likes": 61,
           "replies": 0
         },
         {
           "number": 10,
-          "sentiment": "positive",
+          "sentiment": "negative",
+          "topic": "Политика",
+          "likes": 188,
+          "replies": 33
+        },
+        {
+          "number": 11,
+          "sentiment": "negative",
+          "topic": "Реклама",
+          "likes": 22,
+          "replies": 1
+        },
+        {
+          "number": 12,
+          "sentiment": "neutral",
+          "topic": "Политика",
+          "likes": 7,
+          "replies": 0
+        },
+        {
+          "number": 13,
+          "sentiment": "neutral",
+          "topic": "Политика",
+          "likes": 8,
+          "replies": 0
+        },
+        {
+          "number": 14,
+          "sentiment": "neutral",
           "topic": "Политика",
           "likes": 4,
           "replies": 0
         },
         {
-          "number": 11,
-          "sentiment": "positive",
-          "topic": "Общество",
-          "likes": 151,
-          "replies": 19
-        },
-        {
-          "number": 12,
-          "sentiment": "positive",
-          "topic": "Интервью",
-          "likes": 5,
-          "replies": 2
-        },
-        {
-          "number": 13,
-          "sentiment": "positive",
-          "topic": "Образование",
-          "likes": 2,
-          "replies": 0
-        },
-        {
-          "number": 14,
-          "sentiment": "positive",
-          "topic": "Интервью",
-          "likes": 2,
-          "replies": 0
-        },
-        {
           "number": 15,
-          "sentiment": "positive",
+          "sentiment": "negative",
           "topic": "Политика",
           "likes": 1,
           "replies": 0
         },
         {
           "number": 16,
-          "sentiment": "positive",
-          "topic": "Политика",
-          "likes": 2,
-          "replies": 0
+          "sentiment": "neutral",
+          "topic": "Экономика",
+          "likes": 22,
+          "replies": 6
         },
         {
           "number": 17,
           "sentiment": "negative",
           "topic": "Политика",
-          "likes": 234,
-          "replies": 48
+          "likes": 22,
+          "replies": 6
         },
         {
           "number": 18,
-          "sentiment": "positive",
-          "topic": "Интервью",
-          "likes": 3,
-          "replies": 0
+          "sentiment": "negative",
+          "topic": "Политика",
+          "likes": 88,
+          "replies": 11
         },
         {
           "number": 19,
-          "sentiment": "positive",
-          "topic": "Интервью",
-          "likes": 2,
+          "sentiment": "negative",
+          "topic": "Политика",
+          "likes": 6,
           "replies": 0
         },
         {
           "number": 20,
-          "sentiment": "positive",
-          "topic": "Личность",
-          "likes": 2,
+          "sentiment": "negative",
+          "topic": "Политика",
+          "likes": 4,
           "replies": 0
         }
       ]

@@ -55,11 +55,20 @@ def convert_report(source: Path, output: Path) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input", type=Path, default=ROOT / "data" / "analysis.md")
-    parser.add_argument("--output", type=Path, default=ROOT / "data" / "analysis.pdf")
+    parser.add_argument("--input", type=Path, help="Convert one Markdown file instead of both reports.")
+    parser.add_argument("--output", type=Path, help="Output path for a single report.")
     args = parser.parse_args()
-    convert_report(args.input, args.output)
-    print(f"PDF report: {args.output}")
+    if args.input or args.output:
+        source = args.input or ROOT / "data" / "analysis.md"
+        reports = [(source, args.output or source.with_suffix(".pdf"))]
+    else:
+        reports = [
+            (ROOT / "data" / "analysis.md", ROOT / "data" / "ru_analysis.pdf"),
+            (ROOT / "data" / "en_analysis.md", ROOT / "data" / "en_analysis.pdf"),
+        ]
+    for source, output in reports:
+        convert_report(source, output)
+        print(f"PDF report: {output}")
 
 
 if __name__ == "__main__":
