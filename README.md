@@ -1,58 +1,181 @@
 ﻿# YouTube Comments Analytics
 
-This small Python project gets comments from a YouTube video and saves them as CSV files. It gets up to 100 comments in two orders: by time (`latest`) and by relevance (`relevant`).
+A Telegram bot that analyzes comments on YouTube videos. Send a video link in a private chat. The bot collects comments, uses a local Ollama model to analyze them, and sends the results back.
+
+You receive:
+
+- A short summary as a text message: 3–5 sentences about the comments, with no advice for the video creator.
+- Three chart images: comment sentiment (positive, neutral, or negative), main topics, and average likes and replies by sentiment.
+- A full report as `analysis.pdf`.
+
+The bot's messages are in English. The model writes the report and summary in Russian.
 
 ## Requirements
 
-- Python 3.10 or newer
-- A YouTube Data API v3 key. Enable the YouTube Data API v3 in Google Cloud.
+- Python 3.10 or newer.
+- A YouTube Data API v3 key. Enable this API in Google Cloud.
+- A Telegram bot created with `@BotFather` and its token.
+- Ollama with the `qwen3:8b` model.
+- An internet connection for YouTube and Telegram. With the default settings, Ollama analyzes the comments on your computer.
 
-## Setup
+The PDF needs Arial fonts on Windows/macOS or DejaVu Sans fonts on Linux.
 
-1. Clone the repository and open the project folder.
-2. Create and activate a virtual environment:
+## Setup in VS Code on Windows
 
-   ```powershell
-   py -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   ```
+Open the project folder in VS Code. Select **Terminal → New Terminal**. Run all commands below from the project folder.
 
-   On macOS or Linux, use: `source .venv/bin/activate`.
+### 1. Set up Python
 
-3. Install the packages:
+Create a virtual environment. This keeps the project's Python packages in one folder. Skip this command if `.venv` already exists:
 
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Create a file named `.env` in the project folder. Add your API key:
-
-   ```dotenv
-   YOUTUBE_API_KEY=your_api_key
-   ```
-
-Keep your API key private. The `.env` file is ignored by Git.
-
-## Run the project
-
-Run this command from the project folder:
-
-```bash
-python main.py
+```powershell
+py -m venv .venv
 ```
 
-The script uses the video ID in `main.py`. It replaces these files:
+Install the required packages:
 
-- `data/comments_latest.csv` — comments sorted by time;
-- `data/comments_relevant.csv` — comments sorted by relevance.
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
 
-The CSV files use UTF-8 with BOM encoding and a semicolon (`;`) between columns. They have these columns: `number` (row number), `comment` (comment text), `likes` (like count), and `replies` (number of replies).
+You do not need to activate the environment. These commands use Python from `.venv` directly.
 
-To use another video, change `video_id` in `main.py` to the ID from the video URL. Change `comments_count` to set the number of comments. The YouTube API allows 1 to 100 results in one request.
+### 2. Create the settings file
+
+Create a file named `.env` in the project folder:
+
+```dotenv
+YOUTUBE_API_KEY=your_youtube_api_key
+TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+
+# Optional settings. These are the default values.
+OLLAMA_MODEL=qwen3:8b
+OLLAMA_URL=http://localhost:11434
+```
+
+Replace the example key and token with your own values. Keep them private. Git ignores the `.env` file.
+
+You do not need to set a Telegram user ID. Anyone can use the bot in a private chat. The bot ignores group messages.
+
+### 3. Start Ollama
+
+Open Ollama from the Windows Start menu. Download the model before your first use:
+
+```powershell
+ollama pull qwen3:8b
+```
+
+Keep Ollama running while you use the bot.
+
+## Start and stop the bot
+
+Run this command in the VS Code terminal:
+
+```powershell
+.\.venv\Scripts\python.exe telegram_bot.py
+```
+
+Wait for this message:
+
+```text
+Telegram bot is running. Send it a YouTube video URL.
+```
+
+Then send a video link to your bot in Telegram.
+
+The bot accepts `youtube.com/watch`, `youtu.be`, Shorts, embed, and live video links. For example:
+
+```text
+https://www.youtube.com/watch?v=hT_MAAwFLIc&t=109s
+```
+
+The time value `t=109s` does not change the analysis. The bot collects comments for the whole video.
+
+Keep your computer, Ollama, and the terminal running. To stop the bot, click inside the terminal and press **Ctrl+C**. Run the same command to start it again.
+
+### When several people send links
+
+The bot handles one request at a time. It finishes the first request and sends the results before it starts the next one. Each person receives the results in their own chat.
+
+The bot sends a start message only when it begins that person's request. People who are waiting do not get an immediate reply.
+
+Run only one copy of the bot. All scripts use the same results folder.
+
+## How it works
+
+The bot runs these scripts in order:
+
+| Script | What it does |
+| --- | --- |
+| `main.py` | Gets the latest and top comments from the YouTube API and saves two CSV files. |
+| `analyze.py` | Uses Ollama to create the report, summary, and chart data. |
+| `report_pdf.py` | Converts the Markdown report to PDF with support for Russian text. |
+| `graphs.py` | Creates an HTML chart page and separate SVG and PNG images. |
+
+After all steps finish successfully, the bot sends the summary, images, and PDF to the chat that sent the link. If a step fails, the bot sends an error message. You can find the error details in the terminal.
+
+## Result files
+
+The project saves results in `data/`. Each new run replaces these files. It does not keep a separate history for each user or video.
+
+| Path | Contents |
+| --- | --- |
+| `data/comments_latest.csv` | Comments sorted by time. |
+| `data/comments_relevant.csv` | Top comments, sorted by YouTube relevance. |
+| `data/analysis_summary.txt` | The short summary. The bot sends its text as a message. |
+| `data/analysis.md` | The full report in Markdown format. |
+| `data/analysis.pdf` | The full report sent to Telegram. |
+| `data/analysis_data.json` | Comment numbers, sentiment labels, and topics for the charts. |
+| `data/graphs.html` | A chart page that you can open in a browser. |
+| `data/graphs/` | Three charts, each saved as SVG and PNG. |
+
+The CSV files use UTF-8 with BOM encoding and a semicolon (`;`) between columns. The columns are `number`, `comment`, `likes`, and `replies`.
+
+The PNG files are `sentiment_distribution.png`, `topic_distribution.png`, and `engagement_by_sentiment.png`.
+
+## Run without Telegram
+
+You can run each step yourself in the same terminal. First, set the video link:
+
+```powershell
+$env:YOUTUBE_VIDEO_URL = "https://www.youtube.com/watch?v=hT_MAAwFLIc"
+.\.venv\Scripts\python.exe main.py
+.\.venv\Scripts\python.exe analyze.py
+.\.venv\Scripts\python.exe report_pdf.py
+.\.venv\Scripts\python.exe graphs.py
+```
+
+Run each command after the previous one finishes successfully. This saves the results on your computer. It does not send them to Telegram.
+
+To create the PDF or charts again from existing data, run only the script you need.
+
+You can change the model and the time limit for each Ollama request. The time limit is in seconds:
+
+```powershell
+.\.venv\Scripts\python.exe analyze.py --model qwen3:8b --timeout 600
+```
+
+On macOS/Linux, create the environment with `python3 -m venv .venv`. Use `.venv/bin/python` instead of `.\.venv\Scripts\python.exe`. To choose a video for a manual run, use `export YOUTUBE_VIDEO_URL="https://www.youtube.com/watch?v=hT_MAAwFLIc"`.
 
 ## Limits
 
-- The script makes one request for each order. It does not load more pages, so each file has up to 100 comments.
-- It saves top-level comments only. It saves the number of replies, but not the reply text.
-- Comments must be turned on for the video. API problems, such as a wrong key or a quota limit, stop the script.
-- The `data` folder must exist before you run the script.
+- The current setting is up to **20 comments in each group**. To change it, edit `comments_count` in `main.py`. You can use a value from 1 to 100.
+- The script makes one API request for each group. It does not load more pages.
+- It saves main comments only. It saves the number of replies, but not their text.
+- The latest and top groups may include the same comments. The charts add both groups together without removing copies. The total can count the same comment twice.
+- Comments must be available for the video. Problems with access, the API key, or the YouTube API usage limit stop the process.
+- The `data/` folder must exist before you collect comments. It is already included in this project.
+- The model can make mistakes. The charts show its labels for the collected comments. They do not show the views of all viewers.
+
+## Common problems
+
+| Problem | What to check |
+| --- | --- |
+| `Set TELEGRAM_BOT_TOKEN in .env` | Add your bot token to `.env` and save the file. |
+| `ModuleNotFoundError` | Install the packages with the command in the setup section. |
+| Cannot connect to Ollama | Start Ollama. Check `OLLAMA_URL` and make sure the model is downloaded. |
+| YouTube API error | Check the key, API settings, usage limit, and whether comments are available. |
+| `PDF fonts not found` | Make sure Arial is available, or install DejaVu Sans. |
+| No reply to a new link | Check the terminal. The bot may still be working on another request. |
+
+After you change `.env` or the code, stop the bot with **Ctrl+C** and start it again.
